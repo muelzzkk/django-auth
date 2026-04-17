@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}{{ funcionario.nome }} - Área Restrita{% endblock %}
+
+{% block content %}
+<h1>{{ funcionario.nome }}</h1>
+
+<div style="background-color: white; padding: 2rem; border-radius: 4px; margin-bottom: 2rem;">
+    <h2>Informações Pessoais</h2>
+    <table class="table">
+        <tr>
+            <td><strong>Nome:</strong></td>
+            <td>{{ funcionario.nome }}</td>
+        </tr>
+        <tr>
+            <td><strong>Cargo:</strong></td>
+            <td>{{ funcionario.cargo }}</td>
+        </tr>
+        <tr>
+            <td><strong>Email:</strong></td>
+            <td>{{ funcionario.email }}</td>
+        </tr>
+        <tr>
+            <td><strong>Salário:</strong></td>
+            <td>
+                {% if funcionario.salario %}
+                    R$ {{ funcionario.salario|floatformat:2 }}
+                {% else %}
+                    Não informado
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Data de Criação:</strong></td>
+            <td>{{ funcionario.created_at|date:"d/m/Y H:i" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Última Atualização:</strong></td>
+            <td>{{ funcionario.updated_at|date:"d/m/Y H:i" }}</td>
+        </tr>
+    </table>
+</div>
+
+<div style="background-color: white; padding: 2rem; border-radius: 4px;">
+    <h2>Pedidos do Funcionário</h2>
+    <p>Total de pedidos: <span class="badge badge-primary">{{ total_pedidos }}</span></p>
+    <p>Valor total: <strong>R$ {{ valor_total_pedidos|floatformat:2 }}</strong></p>
+
+    {% if pedidos %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Status</th>
+                    <th>Prioridade</th>
+                    <th>Valor</th>
+                    <th>Data</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in pedidos %}
+                <tr>
+                    <td><strong>{{ pedido.numero_pedido }}</strong></td>
+                    <td>
+                        {% if pedido.status == "pending" %}
+                            <span class="badge badge-warning">Pendente</span>
+                        {% elif pedido.status == "processing" %}
+                            <span class="badge badge-primary">Processando</span>
+                        {% elif pedido.status == "completed" %}
+                            <span class="badge badge-success">Concluído</span>
+                        {% elif pedido.status == "cancelled" %}
+                            <span class="badge badge-danger">Cancelado</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if pedido.prioridade == "low" %}
+                            <span class="badge" style="background-color: #95a5a6; color: white;">Baixa</span>
+                        {% elif pedido.prioridade == "medium" %}
+                            <span class="badge badge-primary">Média</span>
+                        {% elif pedido.prioridade == "high" %}
+                            <span class="badge badge-warning">Alta</span>
+                        {% elif pedido.prioridade == "urgent" %}
+                            <span class="badge badge-danger">Urgente</span>
+                        {% endif %}
+                    </td>
+                    <td>R$ {{ pedido.valor_total|floatformat:2 }}</td>
+                    <td>{{ pedido.data_pedido|date:"d/m/Y" }}</td>
+                    <td>
+                        <a href="{% url 'funcionarios:order_detail' pedido.pk %}" class="btn">Ver</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum pedido associado a este funcionário.</p>
+    {% endif %}
+</div>
+
+<div style="margin-top: 2rem;">
+    <a href="{% url 'funcionarios:funcionario_list' %}" class="btn">Voltar para Listagem</a>
+</div>
+{% endblock %}

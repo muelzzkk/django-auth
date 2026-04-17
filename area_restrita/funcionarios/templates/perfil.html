@@ -1,6 +1,52 @@
-<h1>Perfil do Funcionário</h1>
+{% extends "base.html" %}
 
-<p>Usuário: {{ user.username }}</p>
-<p>Email: {{ user.email }}</p>
+{% block title %}Meu Perfil - Área Restrita{% endblock %}
 
-<a href="{% url 'painel' %}">Voltar</a>
+{% block content %}
+<h1>Meu Perfil</h1>
+
+<div style="background-color: white; padding: 2rem; border-radius: 4px;">
+    <div style="margin-bottom: 2rem;">
+        <h2>Informações da Conta</h2>
+        <table class="table">
+            <tr>
+                <td><strong>Usuário:</strong></td>
+                <td>{{ user.username }}</td>
+            </tr>
+            <tr>
+                <td><strong>Email:</strong></td>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <td><strong>Nome Completo:</strong></td>
+                <td>{{ user.first_name }} {{ user.last_name }}</td>
+            </tr>
+            <tr>
+                <td><strong>Admin:</strong></td>
+                <td>
+                    {% if user.is_staff %}
+                        <span class="badge badge-primary">Sim</span>
+                    {% else %}
+                        <span class="badge" style="background-color: #95a5a6; color: white;">Não</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Superuser:</strong></td>
+                <td>
+                    {% if user.is_superuser %}
+                        <span class="badge badge-primary">Sim</span>
+                    {% else %}
+                        <span class="badge" style="background-color: #95a5a6; color: white;">Não</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    <div>
+        <a href="{% url 'funcionarios:painel' %}" class="btn">Voltar ao Painel</a>
+        <a href="{% url 'logout' %}" class="btn" style="background-color: #e74c3c;">Sair</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,49 @@
-<h1>Painel do Funcionário</h1>
+{% extends "base.html" %}
 
-<p>Bem-vindo, {{ user.username }}</p>
+{% block title %}Painel - Área Restrita{% endblock %}
 
-<a href="{% url 'perfil' %}">Meu perfil</a>
-<a href="{% url 'logout' %}">Sair</a>
+{% block content %}
+<h1>Painel Administrativo</h1>
+
+<div style="background-color: white; padding: 2rem; border-radius: 4px;">
+    <h2>Bem-vindo, {{ user.username }}!</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem;">
+        <div style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border-left: 4px solid #3498db;">
+            <h3>Total de Funcionários</h3>
+            <p style="font-size: 2rem; font-weight: bold;">{{ total_funcionarios }}</p>
+        </div>
+        
+        <div style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border-left: 4px solid #27ae60;">
+            <h3>Total de Pedidos</h3>
+            <p style="font-size: 2rem; font-weight: bold;">{{ total_pedidos }}</p>
+        </div>
+        
+        <div style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border-left: 4px solid #e74c3c;">
+            <h3>Pedidos Pendentes</h3>
+            <p style="font-size: 2rem; font-weight: bold;">{{ pedidos_pendentes }}</p>
+        </div>
+        
+        <div style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border-left: 4px solid #f39c12;">
+            <h3>Pedidos Concluídos</h3>
+            <p style="font-size: 2rem; font-weight: bold;">{{ pedidos_concluidos }}</p>
+        </div>
+    </div>
+    
+    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #ecf0f1;">
+        <h3>Estatísticas de Valor</h3>
+        <p>
+            <strong>Valor Total de Pedidos:</strong> R$ {{ valor_total_pedidos|floatformat:2 }}
+        </p>
+        <p>
+            <strong>Valor Médio por Pedido:</strong> R$ {{ valor_medio_pedidos|floatformat:2 }}
+        </p>
+    </div>
+    
+    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <a href="{% url 'funcionarios:perfil' %}" class="btn">Meu Perfil</a>
+        <a href="{% url 'funcionarios:dashboard' %}" class="btn">Dashboard</a>
+        <a href="{% url 'logout' %}" class="btn" style="background-color: #e74c3c;">Sair</a>
+    </div>
+</div>
+{% endblock %}

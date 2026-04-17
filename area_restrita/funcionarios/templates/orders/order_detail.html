@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}{{ pedido.numero_pedido }} - Detalhes - Área Restrita{% endblock %}
+
+{% block content %}
+<h1>Detalhes do Pedido</h1>
+
+<div style="background-color: white; padding: 2rem; border-radius: 4px; margin-bottom: 2rem;">
+    <h2>{{ pedido.numero_pedido }}</h2>
+    
+    <table class="table">
+        <tr>
+            <td><strong>Número do Pedido:</strong></td>
+            <td>{{ pedido.numero_pedido }}</td>
+        </tr>
+        <tr>
+            <td><strong>Funcionário Responsável:</strong></td>
+            <td>
+                {% if pedido.funcionario %}
+                    <a href="{% url 'funcionarios:funcionario_detail' pedido.funcionario.pk %}">{{ pedido.funcionario.nome }}</a>
+                {% else %}
+                    <em>Sem responsável</em>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Status:</strong></td>
+            <td>
+                {% if pedido.status == "pending" %}
+                    <span class="badge badge-warning">Pendente</span>
+                {% elif pedido.status == "processing" %}
+                    <span class="badge badge-primary">Processando</span>
+                {% elif pedido.status == "completed" %}
+                    <span class="badge badge-success">Concluído</span>
+                {% elif pedido.status == "cancelled" %}
+                    <span class="badge badge-danger">Cancelado</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Prioridade:</strong></td>
+            <td>
+                {% if pedido.prioridade == "low" %}
+                    <span class="badge" style="background-color: #95a5a6; color: white;">Baixa</span>
+                {% elif pedido.prioridade == "medium" %}
+                    <span class="badge badge-primary">Média</span>
+                {% elif pedido.prioridade == "high" %}
+                    <span class="badge badge-warning">Alta</span>
+                {% elif pedido.prioridade == "urgent" %}
+                    <span class="badge badge-danger">Urgente</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Valor Total:</strong></td>
+            <td><strong>R$ {{ pedido.valor_total|floatformat:2 }}</strong></td>
+        </tr>
+        <tr>
+            <td><strong>Data do Pedido:</strong></td>
+            <td>{{ pedido.data_pedido|date:"d/m/Y" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Data de Entrega:</strong></td>
+            <td>
+                {% if pedido.data_entrega %}
+                    {{ pedido.data_entrega|date:"d/m/Y" }}
+                {% else %}
+                    <em>Não informado</em>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Descrição:</strong></td>
+            <td>{{ pedido.descricao|default:"Sem descrição" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Criado em:</strong></td>
+            <td>{{ pedido.created_at|date:"d/m/Y H:i" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Atualizado em:</strong></td>
+            <td>{{ pedido.updated_at|date:"d/m/Y H:i" }}</td>
+        </tr>
+    </table>
+</div>
+
+<div style="margin-top: 2rem; display: flex; gap: 0.5rem;">
+    <a href="{% url 'funcionarios:order_list' %}" class="btn">Voltar para Listagem</a>
+    {% if user.is_staff %}
+        <form method="post" style="display: inline;">
+            {% csrf_token %}
+            {% if pedido.status != "completed" %}
+                <button type="submit" name="action" value="complete" class="btn btn-success">Marcar como Concluído</button>
+            {% endif %}
+            {% if pedido.status != "processing" %}
+                <button type="submit" name="action" value="process" class="btn">Processar</button>
+            {% endif %}
+            {% if pedido.status != "cancelled" %}
+                <button type="submit" name="action" value="cancel" class="btn btn-danger">Cancelar</button>
+            {% endif %}
+        </form>
+    {% endif %}
+</div>
+{% endblock %}

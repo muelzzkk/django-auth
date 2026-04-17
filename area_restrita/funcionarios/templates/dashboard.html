@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Área Restrita{% endblock %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div style="background-color: white; padding: 2rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center;">
+        <h3 style="color: #3498db;">Total de Funcionários</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: #3498db;">{{ total_funcionarios }}</p>
+    </div>
+
+    <div style="background-color: white; padding: 2rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center;">
+        <h3 style="color: #27ae60;">Total de Pedidos</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: #27ae60;">{{ total_pedidos }}</p>
+    </div>
+
+    <div style="background-color: white; padding: 2rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center;">
+        <h3 style="color: #e74c3c;">Pedidos Pendentes</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: #e74c3c;">{{ pedidos_por_status.pending }}</p>
+    </div>
+
+    <div style="background-color: white; padding: 2rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center;">
+        <h3 style="color: #f39c12;">Valor Total (R$)</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: #f39c12;">{{ valor_total_pedidos|floatformat:2 }}</p>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <div style="background-color: white; padding: 2rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h2>Pedidos por Status</h2>
+        <ul style="list-style: none; padding: 1rem 0;">
+            <li style="padding: 0.5rem 0; border-bottom: 1px solid #ecf0f1;">
+                <span class="badge badge-warning">Pendente:</span> {{ pedidos_por_status.pending }}
+            </li>
+            <li style="padding: 0.5rem 0; border-bottom: 1px solid #ecf0f1;">
+                <span class="badge badge-primary">Processando:</span> {{ pedidos_por_status.processing }}
+            </li>
+            <li style="padding: 0.5rem 0; border-bottom: 1px solid #ecf0f1;">
+                <span class="badge badge-success">Concluído:</span> {{ pedidos_por_status.completed }}
+            </li>
+            <li style="padding: 0.5rem 0;">
+                <span class="badge badge-danger">Cancelado:</span> {{ pedidos_por_status.cancelled }}
+            </li>
+        </ul>
+    </div>
+
+    <div style="background-color: white; padding: 2rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h2>Pedidos por Prioridade</h2>
+        <ul style="list-style: none; padding: 1rem 0;">
+            <li style="padding: 0.5rem 0; border-bottom: 1px solid #ecf0f1;">
+                <span class="badge" style="background-color: #95a5a6; color: white;">Baixa:</span> {{ pedidos_por_prioridade.low }}
+            </li>
+            <li style="padding: 0.5rem 0; border-bottom: 1px solid #ecf0f1;">
+                <span class="badge badge-primary">Média:</span> {{ pedidos_por_prioridade.medium }}
+            </li>
+            <li style="padding: 0.5rem 0; border-bottom: 1px solid #ecf0f1;">
+                <span class="badge badge-warning">Alta:</span> {{ pedidos_por_prioridade.high }}
+            </li>
+            <li style="padding: 0.5rem 0;">
+                <span class="badge badge-danger">Urgente:</span> {{ pedidos_por_prioridade.urgent }}
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div style="margin-top: 2rem; background-color: white; padding: 2rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <h2>Últimos 5 Pedidos</h2>
+    {% if ultimos_pedidos %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Funcionário</th>
+                    <th>Status</th>
+                    <th>Valor</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in ultimos_pedidos %}
+                <tr>
+                    <td><a href="{% url 'funcionarios:order_detail' pedido.pk %}">{{ pedido.numero_pedido }}</a></td>
+                    <td>
+                        {% if pedido.funcionario %}
+                            {{ pedido.funcionario.nome }}
+                        {% else %}
+                            <em>Sem responsável</em>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if pedido.status == "pending" %}
+                            <span class="badge badge-warning">Pendente</span>
+                        {% elif pedido.status == "processing" %}
+                            <span class="badge badge-primary">Processando</span>
+                        {% elif pedido.status == "completed" %}
+                            <span class="badge badge-success">Concluído</span>
+                        {% elif pedido.status == "cancelled" %}
+                            <span class="badge badge-danger">Cancelado</span>
+                        {% endif %}
+                    </td>
+                    <td>R$ {{ pedido.valor_total|floatformat:2 }}</td>
+                    <td>{{ pedido.created_at|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum pedido ainda.</p>
+    {% endif %}
+</div>
+
+<div style="margin-top: 2rem; background-color: white; padding: 2rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <h2>Funcionários com Mais Pedidos</h2>
+    {% if funcionarios_top %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Cargo</th>
+                    <th>Total de Pedidos</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for func in funcionarios_top %}
+                <tr>
+                    <td>{{ func.nome }}</td>
+                    <td>{{ func.cargo }}</td>
+                    <td><span class="badge badge-primary">{{ func.total_pedidos }}</span></td>
+                    <td><a href="{% url 'funcionarios:funcionario_detail' func.pk %}" class="btn">Ver</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum funcionário com pedidos.</p>
+    {% endif %}
+</div>
+{% endblock %}

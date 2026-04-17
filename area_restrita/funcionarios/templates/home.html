@@ -1,9 +1,53 @@
-<h1>Bem-vindo ao sistema</h1>
+{% extends "base.html" %}
+
+{% block title %}Home - Área Restrita{% endblock %}
+
+{% block content %}
+<h1>Bem-vindo ao Sistema de Gestão</h1>
 
 {% if user.is_authenticated %}
-    <p>Olá, {{ user.username }}</p>
-    <a href="{% url 'painel' %}">Ir para o painel</a>
-    <a href="{% url 'logout' %}">Sair</a>
+    <div style="background-color: white; padding: 2rem; border-radius: 4px; margin-bottom: 2rem;">
+        <h2>Olá, {{ user.username }}! 👋</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 2rem;">
+            <div style="background-color: #ecf0f1; padding: 1rem; border-radius: 4px; text-align: center;">
+                <h3>Total de Funcionários</h3>
+                <p style="font-size: 2rem; font-weight: bold; color: #3498db;">{{ total_funcionarios }}</p>
+            </div>
+            
+            <div style="background-color: #ecf0f1; padding: 1rem; border-radius: 4px; text-align: center;">
+                <h3>Total de Pedidos</h3>
+                <p style="font-size: 2rem; font-weight: bold; color: #27ae60;">{{ total_pedidos }}</p>
+            </div>
+            
+            <div style="background-color: #ecf0f1; padding: 1rem; border-radius: 4px; text-align: center;">
+                <h3>Pedidos Pendentes</h3>
+                <p style="font-size: 2rem; font-weight: bold; color: #e74c3c;">{{ pedidos_pendentes }}</p>
+            </div>
+            
+            <div style="background-color: #ecf0f1; padding: 1rem; border-radius: 4px; text-align: center;">
+                <h3>Valor Total (R$)</h3>
+                <p style="font-size: 2rem; font-weight: bold; color: #f39c12;">{{ valor_total_pedidos|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div style="background-color: white; padding: 2rem; border-radius: 4px;">
+        <h2>Navegação Rápida</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+            <a href="{% url 'funcionarios:painel' %}" class="btn">Painel</a>
+            <a href="{% url 'funcionarios:dashboard' %}" class="btn">Dashboard</a>
+            <a href="{% url 'funcionarios:funcionario_list' %}" class="btn">Funcionários</a>
+            <a href="{% url 'funcionarios:order_list' %}" class="btn">Pedidos</a>
+            <a href="{% url 'funcionarios:perfil' %}" class="btn">Meu Perfil</a>
+            <a href="{% url 'logout' %}" class="btn" style="background-color: #e74c3c;">Sair</a>
+        </div>
+    </div>
 {% else %}
-    <a href="{% url 'login' %}">Login</a>
+    <div style="background-color: white; padding: 2rem; border-radius: 4px; text-align: center;">
+        <h2>Você não está logado</h2>
+        <p>Por favor, faça login para acessar o sistema.</p>
+        <a href="{% url 'login' %}" class="btn">Login</a>
+    </div>
 {% endif %}
+{% endblock %}

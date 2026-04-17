@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Funcionários - Área Restrita{% endblock %}
+
+{% block content %}
+<h1>Listagem de Funcionários</h1>
+
+<div class="search-box">
+    <form method="get">
+        <input type="text" name="q" placeholder="Buscar por nome ou email..." value="{{ search_query }}">
+        <button type="submit" class="btn">Buscar</button>
+    </form>
+</div>
+
+{% if funcionarios %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Cargo</th>
+            <th>Email</th>
+            <th>Salário</th>
+            <th>Total de Pedidos</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for funcionario in funcionarios %}
+        <tr>
+            <td><strong>{{ funcionario.nome }}</strong></td>
+            <td>{{ funcionario.cargo }}</td>
+            <td>{{ funcionario.email }}</td>
+            <td>
+                {% if funcionario.salario %}
+                    R$ {{ funcionario.salario|floatformat:2 }}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td>
+                <span class="badge badge-primary">{{ funcionario.orders.count }}</span>
+            </td>
+            <td>
+                <a href="{% url 'funcionarios:funcionario_detail' funcionario.pk %}" class="btn">Ver Detalhes</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1">Primeira</a>
+        <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <span class="current">{{ num }}</span>
+        {% else %}
+            <a href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Próxima</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<p>Nenhum funcionário encontrado.</p>
+{% endif %}
+{% endblock %}
